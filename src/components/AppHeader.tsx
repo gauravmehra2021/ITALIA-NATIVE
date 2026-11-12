@@ -1,5 +1,6 @@
 import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Bell, ChevronDown, Languages, UserRound } from 'lucide-react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,6 +8,8 @@ import { studentService } from '../api/services';
 import { colors } from '../theme/colors';
 import type { RootStackParamList } from '../navigation/navigationTypes';
 import { InlineNotice } from './Feedback';
+
+export const APP_HEADER_HEIGHT = 62;
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -24,9 +27,14 @@ function Logo() {
 
 export function AppHeader() {
   const navigation = useNavigation<Navigation>();
+  const insets = useSafeAreaInsets();
   const canGoBack = useNavigationState(state => state.index > 0);
   const [language, setLanguage] = React.useState('EN');
   const [error, setError] = React.useState<string | null>(null);
+  const topInset = Math.max(
+    insets.top,
+    Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0,
+  );
 
   const chooseLanguage = () => {
     Alert.alert('Choose language', undefined, [
@@ -55,15 +63,29 @@ export function AppHeader() {
   };
 
   return (
-    <View>
-      {error ? <InlineNotice message={error} onDismiss={() => setError(null)} /> : null}
+    <View
+      style={[
+        styles.wrapper,
+        {
+          paddingTop: topInset,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}>
       <View style={styles.header}>
-        {canGoBack ? (
-          <Pressable onPress={() => navigation.goBack()} style={styles.backButton} accessibilityRole="button" accessibilityLabel="Go back">
-            <ArrowLeft color={colors.navy} size={19} />
-          </Pressable>
-        ) : null}
-        <Logo />
+        <View style={styles.leftGroup}>
+          {canGoBack ? (
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Go back">
+              <ArrowLeft color={colors.navy} size={20} />
+            </Pressable>
+          ) : null}
+          <Logo />
+        </View>
         <View style={styles.actions}>
           <Pressable onPress={chooseLanguage} style={styles.languageButton} accessibilityRole="button" accessibilityLabel="Choose language">
             <Languages color={colors.navy} size={15} /><Text style={styles.language}>{language}</Text><ChevronDown color={colors.navy} size={13} />
@@ -76,23 +98,47 @@ export function AppHeader() {
           </Pressable>
         </View>
       </View>
+      {error ? (
+        <View style={styles.noticeWrap}>
+          <InlineNotice message={error} onDismiss={() => setError(null)} />
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { height: 66, paddingHorizontal: 18, backgroundColor: colors.white, borderBottomColor: colors.line, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  wrapper: {
+    backgroundColor: colors.white,
+    borderBottomColor: colors.line,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    elevation: 2,
+    shadowColor: colors.navy,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  header: {
+    height: APP_HEADER_HEIGHT,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  leftGroup: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 9 },
   mark: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.navy, borderWidth: 1.5, borderColor: colors.gold },
   markText: { color: colors.white, fontSize: 14, fontWeight: '900', letterSpacing: -2 },
   markUnderline: { position: 'absolute', width: 17, height: 1.5, backgroundColor: colors.gold, bottom: 8 },
   name: { color: colors.navy, fontWeight: '900', fontSize: 17, letterSpacing: -0.4 },
-  tagline: { color: colors.muted, fontSize: 6, fontWeight: '800', letterSpacing: 0.8, marginTop: 1 },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 7 },
-  backButton: { width: 30, height: 34, alignItems: 'center', justifyContent: 'center', marginRight: -5 },
-  languageButton: { flexDirection: 'row', gap: 4, alignItems: 'center', padding: 7, borderRadius: 12, backgroundColor: colors.canvas },
-  language: { color: colors.navy, fontSize: 9, fontWeight: '900' },
+  tagline: { color: colors.muted, fontSize: 6.5, fontWeight: '800', letterSpacing: 0.8, marginTop: 1 },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  backButton: { width: 34, height: 34, borderRadius: 12, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center' },
+  languageButton: { flexDirection: 'row', gap: 4, alignItems: 'center', paddingHorizontal: 9, paddingVertical: 7, borderRadius: 12, backgroundColor: colors.canvas },
+  language: { color: colors.navy, fontSize: 10, fontWeight: '900' },
   iconButton: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
   dot: { position: 'absolute', width: 7, height: 7, borderRadius: 4, top: 5, right: 5, backgroundColor: colors.gold, borderWidth: 1, borderColor: colors.white },
   avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.paleBlue, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#D6E4FA' },
+  noticeWrap: { paddingHorizontal: 16, paddingBottom: 8 },
 });

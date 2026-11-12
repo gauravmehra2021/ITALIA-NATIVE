@@ -1,9 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookOpen, ChartNoAxesColumnIncreasing, House, Sparkles, Target, type LucideIcon } from 'lucide-react-native';
 import { useAuth } from '../auth/AuthContext';
 import { AppHeader } from '../components/AppHeader';
@@ -65,10 +65,10 @@ function MainTabs() {
 export function RootNavigator() {
   const { isLoading, isAuthenticated, bootError } = useAuth();
   if (isLoading) {
-    return <View style={styles.loading}><ActivityIndicator size="large" color={colors.blue} /><Text style={styles.loadingText}>Preparing your learning space...</Text></View>;
+    return <SafeAreaView style={styles.loading}><ActivityIndicator size="large" color={colors.blue} /><Text style={styles.loadingText}>Preparing your learning space...</Text></SafeAreaView>;
   }
   if (bootError) {
-    return <View style={styles.loading}><Text style={styles.errorTitle}>Secure sign-in is unavailable</Text><Text style={styles.loadingText}>{bootError}</Text><Text style={styles.errorHelp}>Restart the app after resolving the device keychain issue.</Text></View>;
+    return <SafeAreaView style={styles.loading}><Text style={styles.errorTitle}>Secure sign-in is unavailable</Text><Text style={styles.loadingText}>{bootError}</Text><Text style={styles.errorHelp}>Restart the app after resolving the device keychain issue.</Text></SafeAreaView>;
   }
 
   return (
@@ -80,6 +80,8 @@ export function RootNavigator() {
           header: renderHeader,
           contentStyle: { backgroundColor: colors.canvas },
           animation: 'slide_from_right',
+          statusBarStyle: 'dark',
+          statusBarHidden: false,
         }}>
         {isAuthenticated ? (
           <>

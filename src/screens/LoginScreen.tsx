@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Controller, useForm, type Control, type FieldValues, type Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LockKeyhole } from 'lucide-react-native';
 import { ApiError, getErrorMessage } from '../api/errors';
@@ -52,33 +52,35 @@ export function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.brand}>
-        <View style={styles.mark}><Text style={styles.markText}>SS</Text><View style={styles.markGold} /></View>
-        <Text style={styles.brandName}>sseuropa</Text><Text style={styles.brandTagline}>LEARN · GROW · SUCCEED</Text>
-      </View>
-      <View style={styles.card}>
-        <Text style={styles.title}>{isOtpStep ? 'Verify it’s you' : 'Welcome back'}</Text>
-        <Text style={styles.subtitle}>{isOtpStep ? `Enter the 6-digit code sent to ${email}.` : 'Sign in to continue your learning journey.'}</Text>
-        {challengeError ? <InlineNotice message={challengeError} onDismiss={() => setChallengeError(null)} /> : null}
-        {!isOtpStep ? (
-          <>
-            <FormField<LoginInput> label="EMAIL ADDRESS" name="email" control={loginForm.control} error={loginForm.formState.errors.email?.message} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" />
-            <FormField<LoginInput> label="PASSWORD" name="password" control={loginForm.control} error={loginForm.formState.errors.password?.message} placeholder="Enter your password" secureTextEntry />
-            <Button title="Continue securely" onPress={() => { submitLogin(); }} loading={loginForm.formState.isSubmitting} />
-          </>
-        ) : (
-          <>
-            <FormField<OtpInput> label="6-DIGIT VERIFICATION CODE" name="code" control={otpForm.control} error={otpForm.formState.errors.code?.message} keyboardType="number-pad" placeholder="••••••" maxLength={6} />
-            <View style={styles.secureHint}><LockKeyhole color={colors.green} size={15} /><Text style={styles.secureText}>Your account is protected with secure verification.</Text></View>
-            <Button title="Verify & sign in" onPress={() => { submitOtp(); }} loading={otpForm.formState.isSubmitting} />
-            <Pressable onPress={goBackToLogin}><Text style={styles.backLink}>Use a different email address</Text></Pressable>
-          </>
-        )}
-      </View>
-      <Text style={styles.privacy}>Your learning data stays private and secure.</Text>
-    </KeyboardAvoidingView>
+    <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
+      <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <View style={styles.brand}>
+            <View style={styles.mark}><Text style={styles.markText}>SS</Text><View style={styles.markGold} /></View>
+            <Text style={styles.brandName}>sseuropa</Text><Text style={styles.brandTagline}>LEARN · GROW · SUCCEED</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.title}>{isOtpStep ? 'Verify it’s you' : 'Welcome back'}</Text>
+            <Text style={styles.subtitle}>{isOtpStep ? `Enter the 6-digit code sent to ${email}.` : 'Sign in to continue your learning journey.'}</Text>
+            {challengeError ? <InlineNotice message={challengeError} onDismiss={() => setChallengeError(null)} /> : null}
+            {!isOtpStep ? (
+              <>
+                <FormField<LoginInput> label="EMAIL ADDRESS" name="email" control={loginForm.control} error={loginForm.formState.errors.email?.message} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" />
+                <FormField<LoginInput> label="PASSWORD" name="password" control={loginForm.control} error={loginForm.formState.errors.password?.message} placeholder="Enter your password" secureTextEntry />
+                <Button title="Continue securely" onPress={() => { submitLogin(); }} loading={loginForm.formState.isSubmitting} />
+              </>
+            ) : (
+              <>
+                <FormField<OtpInput> label="6-DIGIT VERIFICATION CODE" name="code" control={otpForm.control} error={otpForm.formState.errors.code?.message} keyboardType="number-pad" placeholder="••••••" maxLength={6} />
+                <View style={styles.secureHint}><LockKeyhole color={colors.green} size={15} /><Text style={styles.secureText}>Your account is protected with secure verification.</Text></View>
+                <Button title="Verify & sign in" onPress={() => { submitOtp(); }} loading={otpForm.formState.isSubmitting} />
+                <Pressable onPress={goBackToLogin}><Text style={styles.backLink}>Use a different email address</Text></Pressable>
+              </>
+            )}
+          </View>
+          <Text style={styles.privacy}>Your learning data stays private and secure.</Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -125,7 +127,8 @@ function getServerFieldErrors(cause: unknown): Record<string, string> {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: colors.canvas },
+  keyboard: { flex: 1 },
+  container: { flexGrow: 1, justifyContent: 'center', padding: 20, backgroundColor: colors.canvas },
   safe: { flex: 1, backgroundColor: colors.canvas },
   brand: { alignItems: 'center', marginBottom: 24 },
   mark: { width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.navy, borderWidth: 2, borderColor: colors.gold },

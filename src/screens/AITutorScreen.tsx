@@ -7,6 +7,7 @@ import { studentService } from '../api/services';
 import type { TutorMessage } from '../api/types';
 import { tutorMessageSchema } from '../validation/schemas';
 import { colors } from '../theme/colors';
+import { APP_HEADER_HEIGHT } from '../components/AppHeader';
 import { InlineNotice } from '../components/Feedback';
 import { PageHeading } from '../components/PageHeading';
 
@@ -75,7 +76,7 @@ export function AITutorScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={insets.top + 66}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={insets.top + APP_HEADER_HEIGHT}>
       <View style={styles.heading}><View style={styles.tutorIcon}><Sparkles color={colors.gold} size={21} /></View><PageHeading title="Your AI tutor" subtitle="Ask anything. Learn at your pace." /></View>
       {error ? <InlineNotice message={error} onDismiss={() => setError(null)} /> : null}
       <FlatList
