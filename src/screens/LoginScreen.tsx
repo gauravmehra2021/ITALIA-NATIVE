@@ -8,6 +8,7 @@ import { ApiError, getErrorMessage } from '../api/errors';
 import { useAuth } from '../auth/AuthContext';
 import { colors } from '../theme/colors';
 import { loginSchema, otpSchema, type LoginInput, type OtpInput } from '../validation/schemas';
+import { BrandMark } from '../components/BrandMark';
 import { Button } from '../components/Button';
 import { InlineNotice } from '../components/Feedback';
 
@@ -56,7 +57,7 @@ export function LoginScreen() {
       <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View style={styles.brand}>
-            <View style={styles.mark}><Text style={styles.markText}>SS</Text><View style={styles.markGold} /></View>
+            <BrandMark size={92} medallion goldRim />
             <Text style={styles.brandName}>sseuropa</Text><Text style={styles.brandTagline}>LEARN · GROW · SUCCEED</Text>
           </View>
           <View style={styles.card}>
@@ -131,10 +132,7 @@ const styles = StyleSheet.create({
   container: { flexGrow: 1, justifyContent: 'center', padding: 20, backgroundColor: colors.canvas },
   safe: { flex: 1, backgroundColor: colors.canvas },
   brand: { alignItems: 'center', marginBottom: 24 },
-  mark: { width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.navy, borderWidth: 2, borderColor: colors.gold },
-  markText: { color: colors.white, fontSize: 22, fontWeight: '900', letterSpacing: -2 },
-  markGold: { position: 'absolute', width: 26, height: 2, backgroundColor: colors.gold, bottom: 13 },
-  brandName: { color: colors.navy, fontSize: 21, fontWeight: '900', marginTop: 10 },
+  brandName: { color: colors.navy, fontSize: 22, fontWeight: '900', marginTop: 12 },
   brandTagline: { color: colors.muted, fontSize: 8, fontWeight: '800', letterSpacing: 1, marginTop: 3 },
   card: { backgroundColor: colors.white, borderRadius: 20, borderWidth: 1, borderColor: colors.line, padding: 19 },
   title: { color: colors.ink, fontSize: 22, fontWeight: '900' },

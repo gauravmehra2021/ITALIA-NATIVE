@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { studentService } from '../api/services';
 import { colors } from '../theme/colors';
 import type { RootStackParamList } from '../navigation/navigationTypes';
+import { BrandMark } from './BrandMark';
 import { InlineNotice } from './Feedback';
 
 export const APP_HEADER_HEIGHT = 62;
@@ -16,7 +17,7 @@ type Navigation = NativeStackNavigationProp<RootStackParamList>;
 function Logo() {
   return (
     <View style={styles.brand}>
-      <View style={styles.mark}><Text style={styles.markText}>SS</Text><View style={styles.markUnderline} /></View>
+      <BrandMark size={40} />
       <View>
         <Text style={styles.name}>sseuropa</Text>
         <Text style={styles.tagline}>LEARN · GROW · SUCCEED</Text>
@@ -127,10 +128,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   leftGroup: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  mark: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.navy, borderWidth: 1.5, borderColor: colors.gold },
-  markText: { color: colors.white, fontSize: 14, fontWeight: '900', letterSpacing: -2 },
-  markUnderline: { position: 'absolute', width: 17, height: 1.5, backgroundColor: colors.gold, bottom: 8 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   name: { color: colors.navy, fontWeight: '900', fontSize: 17, letterSpacing: -0.4 },
   tagline: { color: colors.muted, fontSize: 6.5, fontWeight: '800', letterSpacing: 0.8, marginTop: 1 },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },

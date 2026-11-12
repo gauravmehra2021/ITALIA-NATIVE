@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
+import { BrandMark } from './BrandMark';
 
 type SplashScreenProps = {
   readyToDismiss: boolean;
@@ -147,15 +148,11 @@ export function SplashScreen({ readyToDismiss, onExitStart, onFinish }: SplashSc
             ]}
           />
           <Animated.View
-            style={[
-              styles.mark,
-              {
-                opacity: logoOpacity,
-                transform: [{ scale: logoScale }],
-              },
-            ]}>
-            <Text style={styles.markText}>SS</Text>
-            <View style={styles.markUnderline} />
+            style={{
+              opacity: logoOpacity,
+              transform: [{ scale: logoScale }],
+            }}>
+            <BrandMark size={120} medallion goldRim />
           </Animated.View>
         </View>
 
@@ -226,47 +223,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   emblemWrap: {
-    width: 112,
-    height: 112,
+    width: 152,
+    height: 152,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pulseRing: {
     position: 'absolute',
-    width: 106,
-    height: 106,
-    borderRadius: 53,
+    width: 144,
+    height: 144,
+    borderRadius: 72,
     borderWidth: 1.5,
     borderColor: colors.gold,
-  },
-  mark: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: colors.navy,
-    borderWidth: 2.5,
-    borderColor: colors.gold,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000000',
-    shadowOpacity: 0.28,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8,
-  },
-  markText: {
-    color: colors.white,
-    fontSize: 33,
-    fontWeight: '900',
-    letterSpacing: -3,
-  },
-  markUnderline: {
-    position: 'absolute',
-    width: 38,
-    height: 2.5,
-    borderRadius: 2,
-    backgroundColor: colors.gold,
-    bottom: 20,
   },
   wordmarkBlock: {
     alignItems: 'center',
