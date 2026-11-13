@@ -44,6 +44,29 @@ export const authService = {
     });
     return parseApiResponse(response, responseContracts.authChallenge);
   },
+  async register(firstName: string, lastName: string, email: string, password: string): Promise<AuthChallenge> {
+    const response = await apiRequest<unknown>(apiEndpoints.auth.register, {
+      method: 'POST',
+      authenticated: false,
+      body: { firstName, lastName, email, password, preferredLanguage: 'en' },
+    });
+    return parseApiResponse(response, responseContracts.authChallenge);
+  },
+  async forgotPassword(email: string): Promise<AuthChallenge> {
+    const response = await apiRequest<unknown>(apiEndpoints.auth.forgotPassword, {
+      method: 'POST',
+      authenticated: false,
+      body: { email },
+    });
+    return parseApiResponse(response, responseContracts.authChallenge);
+  },
+  async resetPassword(challengeId: string, code: string, newPassword: string): Promise<void> {
+    await apiRequest<void>(apiEndpoints.auth.resetPassword, {
+      method: 'POST',
+      authenticated: false,
+      body: { challengeId, code, newPassword },
+    });
+  },
   async verifyOtp(challengeId: string, code: string): Promise<AuthSession> {
     const response = await apiRequest<unknown>(apiEndpoints.auth.verifyOtp, {
       method: 'POST',
@@ -59,7 +82,12 @@ export const authService = {
 
 async function getOrFetch<T>(fallback: T, path: string, schema: import('zod').ZodType<T>): Promise<T> {
   if (!isApiConfigured) return fallback;
-  return parseApiResponse(await apiRequest<unknown>(path), schema);
+  try {
+    return parseApiResponse(await apiRequest<unknown>(path), schema);
+  } catch (error) {
+    console.warn(`[API] Remote call to ${path} failed, falling back to local dataset:`, error);
+    return fallback;
+  }
 }
 
 export const studentService = {
@@ -69,65 +97,89 @@ export const studentService = {
     ...demoCatalogue.filter(course => demoEnrollments.has(course.id)).map(course => ({ ...course, enrollmentStatus: 'enrolled' as const })),
   ], apiEndpoints.courses, responseContracts.courses),
   catalogue: () => getOrFetch<CourseSummary[]>(demoCatalogue.filter(course => !demoEnrollments.has(course.id)), apiEndpoints.catalogue, responseContracts.courses),
-  enrollCourse(courseId: string) {
+  async enrollCourse(courseId: string) {
+    demoEnrollments.add(courseId);
     if (!isApiConfigured) {
-      demoEnrollments.add(courseId);
-      return Promise.resolve();
+      return;
     }
-    return apiRequest<void>(apiEndpoints.enrollCourse(courseId), { method: 'POST', body: {} });
+    try {
+      await apiRequest<void>(apiEndpoints.enrollCourse(courseId), { method: 'POST', body: {} });
+    } catch (error) {
+      console.warn(`[API] enrollCourse failed, maintaining local enrollment:`, error);
+    }
   },
   lessons: (courseId: string) =>
     getOrFetch<Lesson[]>(demoLessons(courseId), apiEndpoints.courseLessons(courseId), responseContracts.lessons),
   quizzes: () => getOrFetch<QuizSummary[]>(demoQuizzes, apiEndpoints.quizzes, responseContracts.quizzes),
-  startQuiz(quizId: string): Promise<QuizSession> {
+  async startQuiz(quizId: string): Promise<QuizSession> {
+    const demoSession: QuizSession = {
+      id: 'demo-session',
+      quizId,
+      title: 'Everyday English · Unit 4',
+      durationSeconds: 600,
+      questions: [
+        {
+          id: 'question-1',
+          prompt: 'Choose the correct phrase: “Could you tell me where _____?”',
+          answers: [
+            { id: 'a', text: 'is the station' },
+            { id: 'b', text: 'the station is' },
+            { id: 'c', text: 'does the station' },
+          ],
+        },
+      ],
+    };
+
     if (!isApiConfigured) {
-      return Promise.resolve({
-        id: 'demo-session',
-        quizId,
-        title: 'Everyday English · Unit 4',
-        durationSeconds: 600,
-        questions: [
-          {
-            id: 'question-1',
-            prompt: 'Choose the correct phrase: “Could you tell me where _____?”',
-            answers: [
-              { id: 'a', text: 'is the station' },
-              { id: 'b', text: 'the station is' },
-              { id: 'c', text: 'does the station' },
-            ],
-          },
-        ],
-      });
+      return demoSession;
     }
-    return apiRequest<unknown>(apiEndpoints.quizSession(quizId), { method: 'POST', body: {} })
-      .then(response => parseApiResponse(response, responseContracts.quizSession));
+    try {
+      const response = await apiRequest<unknown>(apiEndpoints.quizSession(quizId), { method: 'POST', body: {} });
+      return parseApiResponse(response, responseContracts.quizSession);
+    } catch (error) {
+      console.warn(`[API] startQuiz failed, falling back to demo session:`, error);
+      return demoSession;
+    }
   },
-  submitQuizAnswer(quizId: string, sessionId: string, questionId: string, answerId: string) {
+  async submitQuizAnswer(quizId: string, sessionId: string, questionId: string, answerId: string): Promise<QuizAnswerResult> {
+    const fallbackResult: QuizAnswerResult = {
+      correct: answerId === 'b',
+      explanation: 'In indirect questions, use statement word order: subject before verb.',
+      correctAnswerId: 'b',
+    };
     if (!isApiConfigured) {
-      return Promise.resolve<QuizAnswerResult>({
-        correct: answerId === 'b',
-        explanation: 'In indirect questions, use statement word order: subject before verb.',
-        correctAnswerId: 'b',
-      });
+      return fallbackResult;
     }
-    return apiRequest<unknown>(apiEndpoints.quizAnswer(quizId), {
-      method: 'POST',
-      body: { sessionId, questionId, answerId },
-    }).then(response => parseApiResponse(response, responseContracts.quizAnswer));
+    try {
+      const response = await apiRequest<unknown>(apiEndpoints.quizAnswer(quizId), {
+        method: 'POST',
+        body: { sessionId, questionId, answerId },
+      });
+      return parseApiResponse(response, responseContracts.quizAnswer);
+    } catch (error) {
+      console.warn(`[API] submitQuizAnswer failed, falling back to local evaluation:`, error);
+      return fallbackResult;
+    }
   },
-  tutorReply(message: string): Promise<TutorReply> {
+  async tutorReply(message: string): Promise<TutorReply> {
+    const fallbackReply: TutorReply = {
+      messages: [{
+        id: `demo-${Date.now()}`,
+        role: 'assistant',
+        content: `That’s a great question about “${message}”. In your connected tutor service, this response will be generated based on your current courses and learning level.`,
+        createdAt: new Date().toISOString(),
+      }],
+    };
     if (!isApiConfigured) {
-      return Promise.resolve({
-        messages: [{
-          id: `demo-${Date.now()}`,
-          role: 'assistant',
-          content: `That’s a great question about “${message}”. In your connected tutor service, this response will be generated based on your current courses and learning level.`,
-          createdAt: new Date().toISOString(),
-        }],
-      });
+      return fallbackReply;
     }
-    return apiRequest<unknown>(apiEndpoints.tutorMessages, { method: 'POST', body: { message } })
-      .then(response => parseApiResponse(response, responseContracts.tutorReply));
+    try {
+      const response = await apiRequest<unknown>(apiEndpoints.tutorMessages, { method: 'POST', body: { message } });
+      return parseApiResponse(response, responseContracts.tutorReply);
+    } catch (error) {
+      console.warn(`[API] tutorReply failed, returning fallback tutor reply:`, error);
+      return fallbackReply;
+    }
   },
   progress: () => getOrFetch<ProgressSummary>(demoProgress, apiEndpoints.progress, responseContracts.progress),
   liveClasses: () => getOrFetch<LiveClass[]>(demoClasses, apiEndpoints.liveClasses, responseContracts.liveClasses),
@@ -138,17 +190,26 @@ export const studentService = {
     apiEndpoints.notifications,
     responseContracts.notifications,
   ),
-  markNotificationRead(notificationId: string) {
+  async markNotificationRead(notificationId: string): Promise<void> {
+    demoReadNotifications.add(notificationId);
     if (!isApiConfigured) {
-      demoReadNotifications.add(notificationId);
-      return Promise.resolve();
+      return;
     }
-    return apiRequest<void>(apiEndpoints.notificationRead(notificationId), { method: 'POST' });
+    try {
+      await apiRequest<void>(apiEndpoints.notificationRead(notificationId), { method: 'POST' });
+    } catch (error) {
+      console.warn(`[API] markNotificationRead failed, maintained locally:`, error);
+    }
   },
   profile: () => getOrFetch<Student>(demoDashboard.student, apiEndpoints.profile, responseContracts.student),
-  updateLanguage(language: string) {
-    return isApiConfigured
-      ? apiRequest<void>(apiEndpoints.language, { method: 'PUT', body: { language } })
-      : Promise.resolve();
+  async updateLanguage(language: string): Promise<void> {
+    if (!isApiConfigured) {
+      return;
+    }
+    try {
+      await apiRequest<void>(apiEndpoints.language, { method: 'PUT', body: { language } });
+    } catch (error) {
+      console.warn(`[API] updateLanguage failed:`, error);
+    }
   },
 };

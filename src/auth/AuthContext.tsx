@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { isApiConfigured } from '../config/api';
 import type { Student } from '../api/types';
-import { authService } from '../api/services';
+import { authService, studentService } from '../api/services';
 import { clearSessionTokens, getSessionTokens, saveSessionTokens, subscribeSessionExpired } from '../api/sessionStore';
 
 type AuthContextValue = {
@@ -11,6 +11,7 @@ type AuthContextValue = {
   student: Student | null;
   challengeId: string | null;
   beginLogin: (email: string, password: string) => Promise<void>;
+  beginRegister: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
   verifyOtp: (code: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -38,7 +39,16 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
         }
         const tokens = await getSessionTokens();
         if (tokens?.accessToken && mounted) {
-          setStudent({ id: 'student', displayName: 'Student', email: '', preferredLanguage: 'en' });
+          try {
+            const profile = await studentService.profile();
+            if (mounted) {
+              setStudent(profile);
+            }
+          } catch {
+            if (mounted) {
+              setStudent({ id: 'student', displayName: 'Student', email: '', preferredLanguage: 'en' });
+            }
+          }
         }
       } catch (cause) {
         if (mounted) {
@@ -65,6 +75,12 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
   const beginLogin = useCallback(async (email: string, password: string) => {
     setChallengeId(null);
     const challenge = await authService.beginLogin(email, password);
+    setChallengeId(challenge.challengeId);
+  }, []);
+
+  const beginRegister = useCallback(async (firstName: string, lastName: string, email: string, password: string) => {
+    setChallengeId(null);
+    const challenge = await authService.register(firstName, lastName, email, password);
     setChallengeId(challenge.challengeId);
   }, []);
 
@@ -106,9 +122,10 @@ export function AuthProvider({ children }: React.PropsWithChildren) {
     student,
     challengeId,
     beginLogin,
+    beginRegister,
     verifyOtp,
     signOut,
-  }), [isLoading, bootError, student, challengeId, beginLogin, verifyOtp, signOut]);
+  }), [isLoading, bootError, student, challengeId, beginLogin, beginRegister, verifyOtp, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
