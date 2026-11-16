@@ -41,7 +41,14 @@ const lessonSchema: z.ZodType<Lesson> = z.object({
   contentType: z.enum(['video', 'pdf', 'audio', 'interactive']),
   durationMinutes: z.number().positive().optional(),
   completed: z.boolean(),
-  contentUrl: z.string().url().optional(),
+  contentUrl: z.string().optional(),
+  chapterTitle: z.string().optional(),
+  chapterNumber: z.number().optional(),
+  videoUrl: z.string().optional().nullable(),
+  audioUrl: z.string().optional().nullable(),
+  pdfUrl: z.string().optional().nullable(),
+  contentText: z.string().optional().nullable(),
+  practicalTask: z.string().optional().nullable(),
 });
 
 const quizSchema: z.ZodType<QuizSummary> = z.object({

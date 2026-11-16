@@ -15,6 +15,9 @@ export type CourseSummary = {
   totalLessons: number;
   accentColor?: string;
   enrollmentStatus: 'enrolled' | 'available' | 'completed';
+  price?: number;
+  currency?: string;
+  paymentUrl?: string | null;
 };
 
 export type Lesson = {
@@ -24,6 +27,30 @@ export type Lesson = {
   durationMinutes?: number;
   completed: boolean;
   contentUrl?: string;
+  chapterTitle?: string;
+  chapterNumber?: number;
+  videoUrl?: string | null;
+  audioUrl?: string | null;
+  pdfUrl?: string | null;
+  contentText?: string | null;
+  practicalTask?: string | null;
+};
+
+export type MobileAssignment = {
+  id: string;
+  courseId: string;
+  chapterTitle: string;
+  title: string;
+  description: string;
+  referenceFileUrl?: string | null;
+  dueDateUtc?: string | null;
+  totalMarks: number;
+  submitted: boolean;
+  mySubmissionText?: string | null;
+  mySubmissionFileUrl?: string | null;
+  marksObtained?: number | null;
+  teacherFeedback?: string | null;
+  status: string;
 };
 
 export type QuizSummary = {

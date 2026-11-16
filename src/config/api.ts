@@ -41,6 +41,8 @@ export const apiEndpoints = {
   courses: `${root}/students/me/courses`,
   catalogue: `${root}/courses`,
   courseLessons: (courseId: string) => `${root}/students/me/courses/${encodeURIComponent(courseId)}/lessons`,
+  courseAssignments: (courseId: string) => `${root}/students/me/courses/${encodeURIComponent(courseId)}/assignments`,
+  submitAssignment: (assignmentId: string) => `${root}/assignments/${encodeURIComponent(assignmentId)}/submit`,
   enrollCourse: (courseId: string) => `${root}/students/me/courses/${encodeURIComponent(courseId)}/enroll`,
   quizzes: `${root}/students/me/quizzes`,
   quiz: (quizId: string) => `${root}/quizzes/${encodeURIComponent(quizId)}`,

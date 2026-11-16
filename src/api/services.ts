@@ -19,6 +19,7 @@ import type {
   DashboardSummary,
   Lesson,
   LiveClass,
+  MobileAssignment,
   ProgressSummary,
   QuizAnswerResult,
   QuizSession,
@@ -110,6 +111,21 @@ export const studentService = {
   },
   lessons: (courseId: string) =>
     getOrFetch<Lesson[]>(demoLessons(courseId), apiEndpoints.courseLessons(courseId), responseContracts.lessons),
+  assignments: async (courseId: string): Promise<MobileAssignment[]> => {
+    if (!isApiConfigured) return [];
+    try {
+      const response = await apiRequest<MobileAssignment[]>(apiEndpoints.courseAssignments(courseId));
+      return Array.isArray(response) ? response : [];
+    } catch {
+      return [];
+    }
+  },
+  submitAssignment: async (assignmentId: string, submissionText?: string, submissionFileUrl?: string): Promise<MobileAssignment> => {
+    return apiRequest<MobileAssignment>(apiEndpoints.submitAssignment(assignmentId), {
+      method: 'POST',
+      body: { submissionText, submissionFileUrl },
+    });
+  },
   quizzes: () => getOrFetch<QuizSummary[]>(demoQuizzes, apiEndpoints.quizzes, responseContracts.quizzes),
   async startQuiz(quizId: string): Promise<QuizSession> {
     const demoSession: QuizSession = {
