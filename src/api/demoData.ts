@@ -6,7 +6,6 @@ import type {
   ProgressSummary,
   QuizSummary,
   StudentNotification,
-  Subscription,
 } from './types';
 
 export const demoDashboard: DashboardSummary = {
@@ -136,16 +135,6 @@ export const demoCertificates: Certificate[] = [
     verificationUrl: 'https://verify.example.invalid/SS-2026-DS-00841',
   },
 ];
-
-export const demoSubscription: Subscription = {
-  status: 'active',
-  planName: 'Monthly learner plan',
-  amount: 9.99,
-  currency: 'EUR',
-  renewsAt: '2026-10-24T00:00:00Z',
-  provider: 'paypal',
-  maskedPaymentMethod: 'PayPal · •••• 4821',
-};
 
 export const demoNotifications: StudentNotification[] = [
   { id: 'notification-1', category: 'class', title: 'Your live class starts soon', message: '“Speak with confidence” begins at 14:30.', createdAt: '2026-10-06T14:20:00+05:30', read: false },

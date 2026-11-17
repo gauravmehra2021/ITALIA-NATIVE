@@ -11,7 +11,6 @@ import {
   demoNotifications,
   demoProgress,
   demoQuizzes,
-  demoSubscription,
 } from './demoData';
 import type {
   Certificate,
@@ -26,7 +25,6 @@ import type {
   QuizSummary,
   Student,
   StudentNotification,
-  Subscription,
   TutorReply,
 } from './types';
 
@@ -200,7 +198,6 @@ export const studentService = {
   progress: () => getOrFetch<ProgressSummary>(demoProgress, apiEndpoints.progress, responseContracts.progress),
   liveClasses: () => getOrFetch<LiveClass[]>(demoClasses, apiEndpoints.liveClasses, responseContracts.liveClasses),
   certificates: () => getOrFetch<Certificate[]>(demoCertificates, apiEndpoints.certificates, responseContracts.certificates),
-  subscription: () => getOrFetch<Subscription>(demoSubscription, apiEndpoints.subscription, responseContracts.subscription),
   notifications: () => getOrFetch<StudentNotification[]>(
     demoNotifications.map(item => ({ ...item, read: item.read || demoReadNotifications.has(item.id) })),
     apiEndpoints.notifications,

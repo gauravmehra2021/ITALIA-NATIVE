@@ -12,7 +12,6 @@ import type {
   QuizSummary,
   Student,
   StudentNotification,
-  Subscription,
   TutorReply,
 } from './types';
 
@@ -125,17 +124,6 @@ const certificateSchema: z.ZodType<Certificate> = z.object({
   downloadUrl: z.string().url().optional(),
 });
 
-const subscriptionSchema: z.ZodType<Subscription> = z.object({
-  status: z.enum(['active', 'pending', 'expired', 'none']),
-  planName: z.string().optional(),
-  amount: z.number().nonnegative().optional(),
-  currency: z.string().length(3).optional(),
-  renewsAt: z.string().datetime({ offset: true }).optional(),
-  provider: z.enum(['paypal', 'other']).optional(),
-  maskedPaymentMethod: z.string().optional(),
-  managementUrl: z.string().url().optional(),
-});
-
 const notificationSchema: z.ZodType<StudentNotification> = z.object({
   id: z.string().min(1),
   category: z.enum(['class', 'test', 'announcement', 'security']),
@@ -190,7 +178,6 @@ export const responseContracts = {
   progress: progressSchema,
   liveClasses: z.array(liveClassSchema),
   certificates: z.array(certificateSchema),
-  subscription: subscriptionSchema,
   notifications: z.array(notificationSchema),
   tutorReply: tutorReplySchema,
   authChallenge: challengeSchema,

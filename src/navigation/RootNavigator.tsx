@@ -17,7 +17,6 @@ import { ProgressScreen } from '../screens/ProgressScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { LiveClassesScreen } from '../screens/LiveClassesScreen';
 import { CertificatesScreen } from '../screens/CertificatesScreen';
-import { SubscriptionScreen } from '../screens/SubscriptionScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import type { RootStackParamList, TabParamList } from './navigationTypes';
@@ -109,7 +108,6 @@ export function RootNavigator() {
                 <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: true }} />
                 <Stack.Screen name="LiveClasses" component={LiveClassesScreen} options={{ title: 'Live classes' }} />
                 <Stack.Screen name="Certificates" component={CertificatesScreen} options={{ title: 'Certificates' }} />
-                <Stack.Screen name="Subscription" component={SubscriptionScreen} options={{ title: 'Subscription' }} />
                 <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
                 <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
               </>

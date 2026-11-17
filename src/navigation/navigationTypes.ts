@@ -13,7 +13,6 @@ export type RootStackParamList = {
   Login: undefined;
   LiveClasses: undefined;
   Certificates: undefined;
-  Subscription: undefined;
   Notifications: undefined;
   Profile: undefined;
 };

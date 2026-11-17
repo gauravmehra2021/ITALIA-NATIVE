@@ -52,7 +52,6 @@ export const apiEndpoints = {
   progress: `${root}/students/me/progress`,
   liveClasses: `${root}/students/me/live-classes`,
   certificates: `${root}/students/me/certificates`,
-  subscription: `${root}/students/me/subscription`,
   notifications: `${root}/students/me/notifications`,
   notificationRead: (notificationId: string) => `${root}/students/me/notifications/${encodeURIComponent(notificationId)}/read`,
   profile: `${root}/students/me`,

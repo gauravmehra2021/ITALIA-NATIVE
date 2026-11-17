@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Award, Bell, ChevronRight, CreditCard, UserRound, Video } from 'lucide-react-native';
+import { Award, Bell, ChevronRight, UserRound, Video } from 'lucide-react-native';
 import { useAuth } from '../auth/AuthContext';
 import { studentService } from '../api/services';
 import { useResource } from '../hooks/useResource';
@@ -49,7 +49,6 @@ export function ProfileScreen() {
       </View>
       {profileError ? <InlineNotice message={profileError.message} /> : null}
       <MenuItem icon={<Award color={colors.blue} size={17} />} title="My certificates" description="View and verify achievements" onPress={() => navigation.navigate('Certificates')} />
-      <MenuItem icon={<CreditCard color={colors.blue} size={17} />} title="Subscription & payments" description="Manage your learning plan" onPress={() => navigation.navigate('Subscription')} />
       <MenuItem icon={<Bell color={colors.blue} size={17} />} title="Notifications" description="Classes, tests and updates" onPress={() => navigation.navigate('Notifications')} />
       <MenuItem icon={<Video color={colors.blue} size={17} />} title="Live classes" description="Schedule and attendance" onPress={() => navigation.navigate('LiveClasses')} />
       <Button title="Sign out" variant="secondary" onPress={confirmSignOut} />

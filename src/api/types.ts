@@ -126,17 +126,6 @@ export type Certificate = {
   downloadUrl?: string;
 };
 
-export type Subscription = {
-  status: 'active' | 'pending' | 'expired' | 'none';
-  planName?: string;
-  amount?: number;
-  currency?: string;
-  renewsAt?: string;
-  provider?: 'paypal' | 'other';
-  maskedPaymentMethod?: string;
-  managementUrl?: string;
-};
-
 export type StudentNotification = {
   id: string;
   category: 'class' | 'test' | 'announcement' | 'security';

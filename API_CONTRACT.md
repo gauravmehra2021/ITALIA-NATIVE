@@ -34,7 +34,6 @@ Every route below, except auth, requires the bearer token. Arrays are returned d
 | `GET` | `/api/v1/students/me/progress` | — | `ProgressSummary` |
 | `GET` | `/api/v1/students/me/live-classes` | — | `LiveClass[]` |
 | `GET` | `/api/v1/students/me/certificates` | — | `Certificate[]` |
-| `GET` | `/api/v1/students/me/subscription` | — | `Subscription` (including `status: "none"` when empty) |
 | `GET` | `/api/v1/students/me/notifications` | — | `StudentNotification[]` |
 | `POST` | `/api/v1/students/me/notifications/{notificationId}/read` | — | `204 No Content` |
 | `PUT` | `/api/v1/students/me/preferences/language` | `{ "language": "en" }` | `204 No Content` |
@@ -48,7 +47,6 @@ The authoritative field definitions and runtime constraints are in `src/api/type
 - Timestamps are ISO-8601 strings with an explicit UTC marker or offset.
 - Content, meeting, certificate, and payment-management links are absolute URLs.
 - Quiz sessions contain at least one question; each question has at least two answers.
-- `Subscription.status` is `active`, `pending`, `expired`, or `none`.
 - Do not return payment-card secrets. Return only a masked payment method and a short-lived provider management URL.
 
 The API server still needs to be implemented and deployed. In particular, payment provider callbacks, push delivery, actual Google Meet links, and AI tutor generation belong to the .NET/backend integrations; the mobile client only displays their returned status/data.
